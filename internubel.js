@@ -1,7 +1,11 @@
+require("dotenv").config();
 const fs = require("fs").promises;
 const path = require("path");
 const puppeteer = require("puppeteer");
-require("dotenv").config();
+const extractValueAndUnit = require("./utils/extractValueAndUnit");
+const getHrefAndName = require("./utils/getHrefAndName");
+const { initializeFile, writeProductToFile } = require("./utils/handleFile");
+const sanitizeName = require("./utils/sanitizeName");
 
 // Internubel locales IDs for their data
 const internubelLocaleIDs = { nederlands: "1", francais: "2", english: "3", deutsch: "4" };
@@ -13,54 +17,6 @@ const langID = internubelLocaleIDs.francais;
 const credentials = {
   email: process.env.LOGIN_EMAIL,
   password: process.env.LOGIN_PASSWORD,
-};
-
-// Function to sanitize file or directory names
-function sanitizeName(name) {
-  return name.replace(/[\/\\?%*:|"<>]/g, "-");
-}
-
-// Function to initialise a JSON file as an empty array if it does not exist
-async function initializeFile(filePath) {
-  try {
-    await fs.access(filePath);
-  } catch (error) {
-    if (error.code === "ENOENT") {
-      await fs.writeFile(filePath, "[]");
-    } else {
-      throw error;
-    }
-  }
-}
-
-// Function for writing a product to the JSON file
-async function writeProductToFile(filePath, product) {
-  try {
-    // Read existing data from the file
-    let data = await fs.readFile(filePath, "utf8");
-    let products = JSON.parse(data);
-    // Add the new product to the array
-    products.push(product);
-
-    // Write the updated array to the file
-    await fs.writeFile(filePath, JSON.stringify(products, null, 2));
-  } catch (error) {
-    throw error;
-  }
-}
-
-/**
- * @param {puppeteer.ElementHandle<HTMLAnchorElement>[]} selectors
- * @returns {Promise<{href: string, name: string}[]>}
- */
-const getHrefAndName = async (selectors) => {
-  return await Promise.all(
-    selectors.map(async (link) => {
-      const href = await link.evaluate((el) => el.href, link);
-      const name = await link.evaluate((el) => el.textContent, link);
-      return { href, name };
-    })
-  );
 };
 
 //ANCHOR - Scraping function to get products data in the language used
@@ -118,8 +74,11 @@ async function scrapeInternubel() {
       await Promise.all(
         rows?.map(async (row) => {
           const name = await row.evaluate((el) => el?.firstElementChild?.textContent?.trim(), row);
-          const value = await row.evaluate((el) => el?.lastElementChild?.textContent?.trim(), row);
-          if (name && value) array.push({ name, value });
+          const valueStr = await row.evaluate((el) => el?.lastElementChild?.textContent?.trim(), row);
+          if (name && valueStr) {
+            const { sign, amount, unit } = extractValueAndUnit(valueStr);
+            array.push({ name, value: { sign, amount, unit } });
+          }
         })
       );
     };
