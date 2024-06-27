@@ -1,3 +1,5 @@
+const fs = require("fs").promises;
+
 // Function to initialise a JSON file as an empty array if it does not exist
 async function initializeFile(filePath) {
   try {

@@ -4,7 +4,7 @@ const path = require("path");
 const puppeteer = require("puppeteer");
 const extractValueAndUnit = require("./utils/extractValueAndUnit");
 const getHrefAndName = require("./utils/getHrefAndName");
-const { initializeFile, writeProductToFile } = require("./utils/handleFile");
+const { initializeFile, writeProductToFile } = require("./utils/handleFiles");
 const sanitizeName = require("./utils/sanitizeName");
 
 // Internubel locales IDs for their data
