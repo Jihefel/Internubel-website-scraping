@@ -112,14 +112,14 @@ async function scrapeInternubel() {
 
     /**
      * @param {puppeteer.ElementHandle<HTMLTableRowElement>[]} rows
-     * @param {Array<{name: string, value: string}} tableToPushTo
+     * @param {Array<{name: string, value: string}} array
      */
-    const getNameAndValueOfRow = async (rows, tableToPushTo) => {
+    const getNameAndValueOfRow = async (rows, array) => {
       await Promise.all(
         rows?.map(async (row) => {
           const name = await row.evaluate((el) => el?.firstElementChild?.textContent?.trim(), row);
           const value = await row.evaluate((el) => el?.lastElementChild?.textContent?.trim(), row);
-          if (name && value) tableToPushTo.push({ name, value });
+          if (name && value) array.push({ name, value });
         })
       );
     };
