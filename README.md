@@ -24,6 +24,8 @@ Requirements for the script:
    ```sh
    npm install
    ```
+3. Change the **14th line** of **internubel.js** to select the language you want to use.
+   * Replace "francais" by one of the languages shown above (11th line) if needed : "nederlands", "english", "deutsch"
  
 ### Config .env variables
 
@@ -49,8 +51,9 @@ The script will launch a Puppeteer-controlled browser, log into Internubel using
 
 ## Dependencies
 
-- Puppeteer (https://www.npmjs.com/package/puppeteer)
-- dotenv (https://www.npmjs.com/package/dotenv)
+- [Puppeteer](https://www.npmjs.com/package/puppeteer)
+- [dotenv](https://www.npmjs.com/package/dotenv)
+- [Jest](https://www.npmjs.com/package/jest)
 
 ## License
 
