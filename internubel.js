@@ -147,11 +147,6 @@ async function scrapeInternubel() {
 
     // Loop through sub products groups
     for (const subGroup of subProductGroups) {
-      // Find main groups which contain first 2 letters of the sub-group (1. or 10)
-      const mainGroupDirRelevantName = mainProductGroups.find(({ name }) => name.startsWith(subGroup.name.substring(0, 2)))?.name;
-      // Create file path
-      const subGroupFilePath = path.join(__dirname, "data", sanitizeName(mainGroupDirRelevantName), `${sanitizeName(subGroup.name)}.json`);
-      await initializeFile(subGroupFilePath);
       // Go to sub group
       await page.goto(subGroup.href);
       // Wait for sub group to load
@@ -160,6 +155,11 @@ async function scrapeInternubel() {
       const hasTextLi = await hasProductInList();
       // If no products in sub group, continue to next sub group
       if (!hasTextLi) continue;
+      // Find main groups which contain first 2 letters of the sub-group (1. or 10)
+      const mainGroupDirRelevantName = mainProductGroups.find(({ name }) => name.startsWith(subGroup.name.substring(0, 2)))?.name;
+      // Create file path
+      const subGroupFilePath = path.join(__dirname, "data", sanitizeName(mainGroupDirRelevantName), `${sanitizeName(subGroup.name)}.json`);
+      await initializeFile(subGroupFilePath);
 
       await fetchProducts(subGroupFilePath);
     }
