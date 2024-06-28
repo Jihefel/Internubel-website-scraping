@@ -124,6 +124,7 @@ async function scrapeInternubel() {
           units: dataUnits,
           macros: dataMacro,
           micros: dataMicro,
+          generic: !title.includes(" - "), // Check if product is branded or generic
         };
 
         // Write product to file
